@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+*.egg
+
+# Odoo / Postgres data volumes (do NOT commit live data)
+odoo-data/
+postgres-data/
+*.log
+
+# Local credentials / env
+.env
+*.env.local
+config/odoo.conf.local
+
+# Assessment source files (keep repo focused on the module)
+Assesement_Mail.txt
+Technical Assessment.pdf
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

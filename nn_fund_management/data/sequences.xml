@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Human readable, gap-free document numbers for each request type.
+             Using ir.sequence instead of record IDs keeps numbers stable and
+             readable (e.g. ALLOC/2026/0001) and is the standard Odoo way. -->
+
+        <record id="seq_nn_fund_allocation" model="ir.sequence">
+            <field name="name">Fund Allocation</field>
+            <field name="code">nn.fund.allocation</field>
+            <field name="prefix">ALLOC/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_nn_fund_requisition" model="ir.sequence">
+            <field name="name">Fund Requisition</field>
+            <field name="code">nn.fund.requisition</field>
+            <field name="prefix">REQ/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_nn_fund_transfer" model="ir.sequence">
+            <field name="name">Fund Transfer</field>
+            <field name="code">nn.fund.transfer</field>
+            <field name="prefix">TRF/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_nn_fund_bill" model="ir.sequence">
+            <field name="name">Fund Bill</field>
+            <field name="code">nn.fund.bill</field>
+            <field name="prefix">BILL/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

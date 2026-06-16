@@ -1,0 +1,46 @@
+# Docker Compose for the NN Fund Management assessment.
+#
+#   Start:   docker compose up -d --build
+#   Logs:    docker compose logs -f odoo
+#   Open:    http://localhost:8069   (create a DB, then install "NN Fund Management")
+#   Tests:   docker compose run --rm odoo \
+#              odoo -d testdb -i nn_fund_management --test-enable --stop-after-init
+#   Stop:    docker compose down            (add -v to also wipe data)
+
+services:
+  db:
+    image: postgres:15
+    container_name: nn_fund_db
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "odoo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  odoo:
+    build: .
+    container_name: nn_fund_odoo
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8069:8069"
+    environment:
+      HOST: db
+      USER: odoo
+      PASSWORD: odoo
+    volumes:
+      - odoo-data:/var/lib/odoo
+      # Bind-mount the module for live editing (overrides the baked copy).
+      - ./nn_fund_management:/mnt/extra-addons/nn_fund_management
+    command: odoo
+
+volumes:
+  postgres-data:
+  odoo-data:
