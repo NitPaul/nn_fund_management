@@ -81,6 +81,10 @@ class FundHistory(models.Model):
             "res_model": record._name,
             "res_id": record.id,
             "creator_id": record.create_uid.id,
+            # ``record`` keeps the *real* user environment even though this
+            # method is called via sudo(), so the audit log shows who actually
+            # performed the action rather than the superuser.
+            "actor_id": record.env.user.id,
             "old_state": old_state,
             "new_state": new_state,
             "comment": comment,
