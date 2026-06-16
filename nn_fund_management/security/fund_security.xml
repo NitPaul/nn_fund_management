@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- =====================================================
+             Security groups (roles)
+             ===================================================== -->
+        <record id="module_category_fund" model="ir.module.category">
+            <field name="name">Fund Management</field>
+            <field name="description">Roles for the NN Fund Management module.</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- Base role: can create/view their own fund requests. -->
+        <record id="group_fund_user" model="res.groups">
+            <field name="name">Fund User</field>
+            <field name="category_id" ref="module_category_fund"/>
+        </record>
+
+        <!-- Finance: confirms incoming funds, manages bills. -->
+        <record id="group_fund_finance" model="res.groups">
+            <field name="name">Finance User</field>
+            <field name="category_id" ref="module_category_fund"/>
+            <field name="implied_ids" eval="[(4, ref('group_fund_user'))]"/>
+        </record>
+
+        <!-- GM approver. -->
+        <record id="group_fund_gm_approver" model="res.groups">
+            <field name="name">GM Approver</field>
+            <field name="category_id" ref="module_category_fund"/>
+            <field name="implied_ids" eval="[(4, ref('group_fund_user'))]"/>
+        </record>
+
+        <!-- MD approver. -->
+        <record id="group_fund_md_approver" model="res.groups">
+            <field name="name">MD Approver</field>
+            <field name="category_id" ref="module_category_fund"/>
+            <field name="implied_ids" eval="[(4, ref('group_fund_user'))]"/>
+        </record>
+
+        <!-- Administrator: full control, may cancel approved records and
+             prune audit logs. Implies every other role. -->
+        <record id="group_fund_admin" model="res.groups">
+            <field name="name">Fund Administrator</field>
+            <field name="category_id" ref="module_category_fund"/>
+            <field name="implied_ids" eval="[(4, ref('group_fund_user')),
+                                             (4, ref('group_fund_finance')),
+                                             (4, ref('group_fund_gm_approver')),
+                                             (4, ref('group_fund_md_approver'))]"/>
+        </record>
+
+        <!-- =====================================================
+             Record rules
+             ===================================================== -->
+
+        <!-- Multi-company isolation: applied to everyone (global rules,
+             no groups => AND-ed with any group rules). Users never see
+             records from companies they are not assigned to. -->
+        <record id="rule_account_company" model="ir.rule">
+            <field name="name">Fund Account: company isolation</field>
+            <field name="model_id" ref="model_nn_fund_account"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_target_company" model="ir.rule">
+            <field name="name">Fund Target: company isolation</field>
+            <field name="model_id" ref="model_nn_fund_target"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_incoming_company" model="ir.rule">
+            <field name="name">Incoming Fund: company isolation</field>
+            <field name="model_id" ref="model_nn_incoming_fund"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_allocation_company" model="ir.rule">
+            <field name="name">Allocation: company isolation</field>
+            <field name="model_id" ref="model_nn_fund_allocation"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_requisition_company" model="ir.rule">
+            <field name="name">Requisition: company isolation</field>
+            <field name="model_id" ref="model_nn_fund_requisition"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_transfer_company" model="ir.rule">
+            <field name="name">Transfer: company isolation</field>
+            <field name="model_id" ref="model_nn_fund_transfer"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_bill_company" model="ir.rule">
+            <field name="name">Bill: company isolation</field>
+            <field name="model_id" ref="model_nn_fund_bill"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <!-- Ownership rules: a plain Fund User only sees the requests they
+             created or that name them as requester. Approvers / finance /
+             admins get a permissive "see all" rule (group rules are OR-ed),
+             so they can review everything. -->
+
+        <!-- Allocation -->
+        <record id="rule_allocation_own" model="ir.rule">
+            <field name="name">Allocation: own records (Fund User)</field>
+            <field name="model_id" ref="model_nn_fund_allocation"/>
+            <field name="groups" eval="[(4, ref('group_fund_user'))]"/>
+            <field name="domain_force">['|', ('create_uid', '=', user.id), ('requested_by', '=', user.id)]</field>
+        </record>
+        <record id="rule_allocation_all" model="ir.rule">
+            <field name="name">Allocation: all records (reviewers)</field>
+            <field name="model_id" ref="model_nn_fund_allocation"/>
+            <field name="groups" eval="[(4, ref('group_fund_gm_approver')),
+                                        (4, ref('group_fund_md_approver')),
+                                        (4, ref('group_fund_finance')),
+                                        (4, ref('group_fund_admin'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Requisition -->
+        <record id="rule_requisition_own" model="ir.rule">
+            <field name="name">Requisition: own records (Fund User)</field>
+            <field name="model_id" ref="model_nn_fund_requisition"/>
+            <field name="groups" eval="[(4, ref('group_fund_user'))]"/>
+            <field name="domain_force">['|', ('create_uid', '=', user.id), ('requested_by', '=', user.id)]</field>
+        </record>
+        <record id="rule_requisition_all" model="ir.rule">
+            <field name="name">Requisition: all records (reviewers)</field>
+            <field name="model_id" ref="model_nn_fund_requisition"/>
+            <field name="groups" eval="[(4, ref('group_fund_gm_approver')),
+                                        (4, ref('group_fund_md_approver')),
+                                        (4, ref('group_fund_finance')),
+                                        (4, ref('group_fund_admin'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+        <!-- Transfer -->
+        <record id="rule_transfer_own" model="ir.rule">
+            <field name="name">Transfer: own records (Fund User)</field>
+            <field name="model_id" ref="model_nn_fund_transfer"/>
+            <field name="groups" eval="[(4, ref('group_fund_user'))]"/>
+            <field name="domain_force">['|', ('create_uid', '=', user.id), ('requested_by', '=', user.id)]</field>
+        </record>
+        <record id="rule_transfer_all" model="ir.rule">
+            <field name="name">Transfer: all records (reviewers)</field>
+            <field name="model_id" ref="model_nn_fund_transfer"/>
+            <field name="groups" eval="[(4, ref('group_fund_gm_approver')),
+                                        (4, ref('group_fund_md_approver')),
+                                        (4, ref('group_fund_finance')),
+                                        (4, ref('group_fund_admin'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+        </record>
+
+    </data>
+</odoo>
