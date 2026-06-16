@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- =============================================================
+             Demo users - one per role, to demonstrate the segregation of
+             duties (a GM cannot do an MD's job, nobody approves their own
+             request, etc.). Default password is "demo" for all of them.
+             ============================================================= -->
+        <record id="user_fund_clerk" model="res.users">
+            <field name="name">Fiona Clerk (Fund User)</field>
+            <field name="login">fund.user@demo.com</field>
+            <field name="password">demo</field>
+            <field name="groups_id" eval="[(4, ref('nn_fund_management.group_fund_user'))]"/>
+        </record>
+
+        <record id="user_finance" model="res.users">
+            <field name="name">Frank Finance (Finance User)</field>
+            <field name="login">finance@demo.com</field>
+            <field name="password">demo</field>
+            <field name="groups_id" eval="[(4, ref('nn_fund_management.group_fund_finance'))]"/>
+        </record>
+
+        <record id="user_gm" model="res.users">
+            <field name="name">Grace GM (General Manager)</field>
+            <field name="login">gm@demo.com</field>
+            <field name="password">demo</field>
+            <field name="groups_id" eval="[(4, ref('nn_fund_management.group_fund_gm_approver'))]"/>
+        </record>
+
+        <record id="user_md" model="res.users">
+            <field name="name">Mike MD (Managing Director)</field>
+            <field name="login">md@demo.com</field>
+            <field name="password">demo</field>
+            <field name="groups_id" eval="[(4, ref('nn_fund_management.group_fund_md_approver'))]"/>
+        </record>
+
+        <!-- =============================================================
+             Fund account
+             ============================================================= -->
+        <record id="account_city_bank" model="nn.fund.account">
+            <field name="name">City Bank - Main</field>
+            <field name="account_type">bank</field>
+            <field name="code">CB-0001</field>
+        </record>
+
+        <!-- =============================================================
+             Targets: projects + expense heads
+             ============================================================= -->
+        <record id="target_project_a" model="nn.fund.target">
+            <field name="name">Project A</field>
+            <field name="target_type">project</field>
+            <field name="code">PRJ-A</field>
+        </record>
+        <record id="target_project_b" model="nn.fund.target">
+            <field name="name">Project B</field>
+            <field name="target_type">project</field>
+            <field name="code">PRJ-B</field>
+        </record>
+        <record id="target_office_rent" model="nn.fund.target">
+            <field name="name">Office Rent</field>
+            <field name="target_type">expense_head</field>
+            <field name="code">EXP-RENT</field>
+        </record>
+        <record id="target_salary" model="nn.fund.target">
+            <field name="name">Salary</field>
+            <field name="target_type">expense_head</field>
+            <field name="code">EXP-SAL</field>
+        </record>
+
+        <!-- =============================================================
+             Configurable approval rules (bonus). Mirrors the brief's
+             example thresholds.
+             ============================================================= -->
+        <record id="rule_small" model="nn.approval.rule">
+            <field name="name">Up to 50,000 - GM only</field>
+            <field name="request_type">any</field>
+            <field name="min_amount">0</field>
+            <field name="max_amount">50000</field>
+            <field name="md_required" eval="False"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="rule_large" model="nn.approval.rule">
+            <field name="name">Above 50,000 - GM + MD</field>
+            <field name="request_type">any</field>
+            <field name="min_amount">50000.01</field>
+            <field name="max_amount">0</field>
+            <field name="md_required" eval="True"/>
+            <field name="sequence">20</field>
+        </record>
+
+    </data>
+</odoo>

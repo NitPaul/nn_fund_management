@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_approval_rule_tree" model="ir.ui.view">
+        <field name="name">nn.approval.rule.tree</field>
+        <field name="model">nn.approval.rule</field>
+        <field name="arch" type="xml">
+            <tree string="Approval Rules" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="request_type"/>
+                <field name="min_amount"/>
+                <field name="max_amount"/>
+                <field name="md_required"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_approval_rule_form" model="ir.ui.view">
+        <field name="name">nn.approval.rule.form</field>
+        <field name="model">nn.approval.rule</field>
+        <field name="arch" type="xml">
+            <form string="Approval Rule">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="request_type"/>
+                            <field name="min_amount"/>
+                            <field name="max_amount"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="md_required"/>
+                            <field name="sequence"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <p class="text-muted">
+                        When a request matches this rule, MD approval is
+                        <b>required</b> only if "Requires MD Approval" is
+                        ticked. Otherwise GM approval alone fully approves the
+                        request. The first matching rule (by priority) wins.
+                    </p>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_approval_rule" model="ir.actions.act_window">
+        <field name="name">Approval Rules</field>
+        <field name="res_model">nn.approval.rule</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

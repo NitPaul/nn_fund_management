@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Simple dashboard: a kanban of fund accounts and one of targets gives
+         an at-a-glance view of received / held / assigned / available money
+         without any custom JavaScript. -->
+
+    <record id="view_fund_account_kanban" model="ir.ui.view">
+        <field name="name">nn.fund.account.kanban</field>
+        <field name="model">nn.fund.account</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard">
+                <field name="name"/>
+                <field name="total_received"/>
+                <field name="held_amount"/>
+                <field name="total_assigned"/>
+                <field name="available_balance"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_card_content p-2">
+                            <div class="o_kanban_record_title">
+                                <strong><field name="name"/></strong>
+                            </div>
+                            <div class="row mt8">
+                                <div class="col-6">Received</div>
+                                <div class="col-6 text-end">
+                                    <field name="total_received" widget="monetary"/>
+                                </div>
+                                <div class="col-6">On Hold</div>
+                                <div class="col-6 text-end">
+                                    <field name="held_amount" widget="monetary"/>
+                                </div>
+                                <div class="col-6">Assigned</div>
+                                <div class="col-6 text-end">
+                                    <field name="total_assigned" widget="monetary"/>
+                                </div>
+                                <div class="col-6"><strong>Available</strong></div>
+                                <div class="col-6 text-end">
+                                    <strong><field name="available_balance" widget="monetary"/></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_dashboard_accounts" model="ir.actions.act_window">
+        <field name="name">Fund Dashboard</field>
+        <field name="res_model">nn.fund.account</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_id" ref="view_fund_account_kanban"/>
+    </record>
+
+    <!-- Recent fund movements (audit history). -->
+    <record id="view_fund_history_tree" model="ir.ui.view">
+        <field name="name">nn.fund.history.tree</field>
+        <field name="model">nn.fund.history</field>
+        <field name="arch" type="xml">
+            <tree string="Fund History" create="false" edit="false">
+                <field name="action_date"/>
+                <field name="name"/>
+                <field name="actor_id"/>
+                <field name="old_state"/>
+                <field name="new_state"/>
+                <field name="amount"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="fund_account_id"/>
+                <field name="target_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_fund_history_search" model="ir.ui.view">
+        <field name="name">nn.fund.history.search</field>
+        <field name="model">nn.fund.history</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="actor_id"/>
+                <field name="fund_account_id"/>
+                <field name="target_id"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_actor" string="Performed By"
+                            context="{'group_by': 'actor_id'}"/>
+                    <filter name="group_account" string="Fund Account"
+                            context="{'group_by': 'fund_account_id'}"/>
+                    <filter name="group_target" string="Target"
+                            context="{'group_by': 'target_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_fund_history" model="ir.actions.act_window">
+        <field name="name">Fund History</field>
+        <field name="res_model">nn.fund.history</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_fund_transfer_tree" model="ir.ui.view">
+        <field name="name">nn.fund.transfer.tree</field>
+        <field name="model">nn.fund.transfer</field>
+        <field name="arch" type="xml">
+            <tree string="Fund Transfers" decoration-success="state == 'approved'"
+                  decoration-info="state in ('submitted','gm_approval')"
+                  decoration-danger="state == 'rejected'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="request_date"/>
+                <field name="source_id"/>
+                <field name="destination_id"/>
+                <field name="amount" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_fund_transfer_form" model="ir.ui.view">
+        <field name="name">nn.fund.transfer.form</field>
+        <field name="model">nn.fund.transfer</field>
+        <field name="arch" type="xml">
+            <form string="Fund Transfer">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_gm_approve" type="object"
+                            string="GM Approve" class="oe_highlight"
+                            invisible="state != 'submitted'"
+                            groups="nn_fund_management.group_fund_gm_approver"/>
+                    <button name="action_md_approve" type="object"
+                            string="MD Approve" class="oe_highlight"
+                            invisible="state != 'gm_approval'"
+                            groups="nn_fund_management.group_fund_md_approver"/>
+                    <button name="action_reject" type="object" string="Reject"
+                            invisible="state not in ('submitted','gm_approval')"
+                            groups="nn_fund_management.group_fund_gm_approver,nn_fund_management.group_fund_md_approver"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('rejected','cancelled')"/>
+                    <button name="action_reset_to_draft" type="object"
+                            string="Reset to Draft"
+                            invisible="state not in ('rejected','cancelled')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,gm_approval,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="source_id" readonly="state != 'draft'"/>
+                            <field name="source_available"/>
+                            <field name="destination_id" readonly="state != 'draft'"/>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="request_date" readonly="state != 'draft'"/>
+                            <field name="requested_by" readonly="state != 'draft'"/>
+                            <field name="md_required"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Reason">
+                        <field name="reason" nolabel="1" readonly="state != 'draft'"/>
+                    </group>
+                    <notebook>
+                        <page string="Approval History">
+                            <field name="approval_line_ids" readonly="1">
+                                <tree>
+                                    <field name="create_date" string="Date"/>
+                                    <field name="approver_id"/>
+                                    <field name="level"/>
+                                    <field name="decision"/>
+                                    <field name="comment"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fund_transfer" model="ir.actions.act_window">
+        <field name="name">Fund Transfers</field>
+        <field name="res_model">nn.fund.transfer</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

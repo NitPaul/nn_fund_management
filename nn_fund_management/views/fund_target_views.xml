@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_fund_target_tree" model="ir.ui.view">
+        <field name="name">nn.fund.target.tree</field>
+        <field name="model">nn.fund.target</field>
+        <field name="arch" type="xml">
+            <tree string="Projects / Expense Heads">
+                <field name="name"/>
+                <field name="target_type"/>
+                <field name="total_allocated" sum="Allocated"/>
+                <field name="total_spent" sum="Spent"/>
+                <field name="available_fund" sum="Available"/>
+                <field name="currency_id" column_invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_fund_target_form" model="ir.ui.view">
+        <field name="name">nn.fund.target.form</field>
+        <field name="model">nn.fund.target</field>
+        <field name="arch" type="xml">
+            <form string="Fund Target">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Project A"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="target_type"/>
+                            <field name="code"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Balances (computed - read only)">
+                        <group>
+                            <field name="total_allocated"/>
+                            <field name="incoming_transfers"/>
+                            <field name="outgoing_transfers"/>
+                            <field name="requisition_hold"/>
+                        </group>
+                        <group>
+                            <field name="transfer_hold"/>
+                            <field name="approved_unspent"/>
+                            <field name="total_spent"/>
+                            <field name="available_fund"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Allocations">
+                            <field name="allocation_ids" readonly="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="fund_account_id"/>
+                                    <field name="amount"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Requisitions">
+                            <field name="requisition_ids" readonly="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="requested_amount"/>
+                                    <field name="remaining_billable_amount"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fund_target" model="ir.actions.act_window">
+        <field name="name">Projects / Expense Heads</field>
+        <field name="res_model">nn.fund.target</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

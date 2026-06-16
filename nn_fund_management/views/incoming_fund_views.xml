@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_incoming_fund_tree" model="ir.ui.view">
+        <field name="name">nn.incoming.fund.tree</field>
+        <field name="model">nn.incoming.fund</field>
+        <field name="arch" type="xml">
+            <tree string="Incoming Funds" decoration-success="state == 'confirmed'" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="fund_account_id"/>
+                <field name="transaction_reference"/>
+                <field name="sender"/>
+                <field name="amount" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_incoming_fund_form" model="ir.ui.view">
+        <field name="name">nn.incoming.fund.form</field>
+        <field name="model">nn.incoming.fund</field>
+        <field name="arch" type="xml">
+            <form string="Incoming Fund">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm"
+                            class="oe_highlight"
+                            invisible="state not in ('draft', 'pending_verification')"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state == 'cancelled'"/>
+                    <button name="action_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,pending_verification,confirmed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="fund_account_id" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="transaction_reference" readonly="state != 'draft'"/>
+                            <field name="sender" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="email_message_id" readonly="1"
+                                   invisible="not email_message_id"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"
+                               readonly="state != 'draft'"/>
+                    </group>
+                    <field name="attachment_ids" widget="many2many_binary"/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_incoming_fund" model="ir.actions.act_window">
+        <field name="name">Incoming Funds</field>
+        <field name="res_model">nn.incoming.fund</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
