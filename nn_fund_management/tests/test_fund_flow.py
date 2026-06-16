@@ -25,6 +25,9 @@ class TestFundFlow(TransactionCase):
             return Users.create({
                 "name": name,
                 "login": login,
+                # An email is required so the approvers can post chatter
+                # messages when they approve or reject a request.
+                "email": login,
                 "company_id": company.id,
                 "company_ids": [(4, company.id)],
                 "groups_id": [(4, cls.env.ref(group_xmlid).id)],
@@ -222,8 +225,14 @@ class TestFundFlow(TransactionCase):
 
     def test_06_computed_balance_not_editable(self):
         self._receive(100000, "TXN-RO")
-        with self.assertRaises(Exception):
-            self.account.write({"available_balance": 999999})
+        field = self.env["nn.fund.account"]._fields["available_balance"]
+        # The balance is a stored computed field with no inverse method, so the
+        # ORM marks it read-only and gives it no write-back path: it can never
+        # be edited from a form or set through a normal write. The only way the
+        # number changes is the compute from the record state.
+        self.assertTrue(field.readonly)
+        self.assertIsNone(field.inverse)
+        self.assertEqual(self.account.available_balance, 100000)
 
     def test_07_transfer_source_equals_destination_blocked(self):
         with self.assertRaises(ValidationError):

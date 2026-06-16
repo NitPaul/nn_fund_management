@@ -10,6 +10,7 @@
         <record id="user_fund_clerk" model="res.users">
             <field name="name">Fiona Clerk (Fund User)</field>
             <field name="login">fund.user@demo.com</field>
+            <field name="email">fund.user@demo.com</field>
             <field name="password">demo</field>
             <field name="groups_id" eval="[(4, ref('nn_fund_management.group_fund_user'))]"/>
         </record>
@@ -17,6 +18,7 @@
         <record id="user_finance" model="res.users">
             <field name="name">Frank Finance (Finance User)</field>
             <field name="login">finance@demo.com</field>
+            <field name="email">finance@demo.com</field>
             <field name="password">demo</field>
             <field name="groups_id" eval="[(4, ref('nn_fund_management.group_fund_finance'))]"/>
         </record>
@@ -24,6 +26,7 @@
         <record id="user_gm" model="res.users">
             <field name="name">Grace GM (General Manager)</field>
             <field name="login">gm@demo.com</field>
+            <field name="email">gm@demo.com</field>
             <field name="password">demo</field>
             <field name="groups_id" eval="[(4, ref('nn_fund_management.group_fund_gm_approver'))]"/>
         </record>
@@ -31,6 +34,7 @@
         <record id="user_md" model="res.users">
             <field name="name">Mike MD (Managing Director)</field>
             <field name="login">md@demo.com</field>
+            <field name="email">md@demo.com</field>
             <field name="password">demo</field>
             <field name="groups_id" eval="[(4, ref('nn_fund_management.group_fund_md_approver'))]"/>
         </record>
