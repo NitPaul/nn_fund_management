@@ -15,6 +15,10 @@
         <record id="group_fund_user" model="res.groups">
             <field name="name">Fund User</field>
             <field name="category_id" ref="module_category_fund"/>
+            <!-- Every fund role is a regular internal user, so it inherits the
+                 standard ACLs (mail.thread, message subtypes, currencies...)
+                 that the chatter and approval workflow rely on. -->
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
         <!-- Finance: confirms incoming funds, manages bills. -->

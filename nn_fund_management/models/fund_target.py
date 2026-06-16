@@ -44,9 +44,9 @@ class FundTarget(models.Model):
     bill_ids = fields.One2many(
         "nn.fund.bill", "target_id", string="Bills")
     transfer_out_ids = fields.One2many(
-        "nn.fund.transfer", "source_id", string="Outgoing Transfers")
+        "nn.fund.transfer", "source_id", string="Outgoing Transfer Records")
     transfer_in_ids = fields.One2many(
-        "nn.fund.transfer", "destination_id", string="Incoming Transfers")
+        "nn.fund.transfer", "destination_id", string="Incoming Transfer Records")
 
     # --- Computed balances ------------------------------------------------
     total_allocated = fields.Monetary(

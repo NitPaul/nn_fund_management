@@ -77,7 +77,9 @@ class FundAllocation(models.Model):
         return True
 
     def _on_submit(self):
-        # Balances recompute automatically from the new state; force the
-        # source account to refresh so the held amount is immediately visible.
-        self.mapped("fund_account_id")._compute_balances()
+        # Nothing to do: the account's stored balances depend on the
+        # allocation state, so Odoo recomputes ``held_amount`` automatically
+        # the moment this record moves to ``submitted``. Calling the compute
+        # method directly here would instead perform an ACL-checked write on
+        # the account, which the requesting Fund User is not allowed to do.
         return True

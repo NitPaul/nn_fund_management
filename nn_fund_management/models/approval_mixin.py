@@ -360,7 +360,10 @@ class ApprovalMixin(models.AbstractModel):
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get("name", _("New")) == _("New"):
-                seq = self.env["ir.sequence"].next_by_code(self._name)
+                # Sequence numbers are generated with sudo: a Fund User who is
+                # allowed to create a request has no direct read access to
+                # ir.sequence, but should still receive a document number.
+                seq = self.env["ir.sequence"].sudo().next_by_code(self._name)
                 vals["name"] = seq or _("New")
         return super().create(vals_list)
 
