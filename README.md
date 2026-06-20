@@ -234,5 +234,4 @@ that and for Railway / generic VPS instructions.
 | `nn_fund_management/ARCHITECTURE.md` | Design deep-dive. |
 | `docker-compose.yml`, `Dockerfile`, `config/odoo.conf` | Containerisation. |
 | `DEPLOY.md` | Live deployment guide. |
-| `DEMO_SCRIPT.md` | Screen-recording walkthrough (the 13-step demo). |
-| `INTERVIEW_PREP.md` | Study guide for the technical interview. |
+| `render.yaml` | One-click Render.com deployment blueprint. |

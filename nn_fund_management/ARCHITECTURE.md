@@ -122,8 +122,10 @@ therefore nothing to forget. `@api.constrains` on `available_balance` /
 `available_fund` blocks anything that would push a balance negative, and the
 `_validate_submit()` hooks block over-requests up front with a friendly error.
 
-A worked example (the sample demo) is traced step by step in
-`../DEMO_SCRIPT.md`.
+A worked example (the assessment's 13-step sample demonstration) is encoded as
+an automated test in `tests/test_fund_flow.py`
+(`test_01_sample_demonstration`), asserting the balances and holds at each
+step.
 
 ## 6. Bill control
 

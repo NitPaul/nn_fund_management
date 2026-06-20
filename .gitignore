@@ -19,6 +19,10 @@ config/odoo.conf.local
 Assesement_Mail.txt
 Technical Assessment.pdf
 
+# Personal aids - kept locally, not part of the submitted deliverables
+DEMO_SCRIPT.md
+INTERVIEW_PREP.md
+
 # IDE / OS
 .idea/
 .vscode/
