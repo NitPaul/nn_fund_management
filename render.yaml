@@ -1,0 +1,59 @@
+# Render.com Blueprint — one-click live deployment of the NN Fund Management module.
+#
+# How to use:
+#   1. Push this repo to GitHub (already done).
+#   2. Go to https://dashboard.render.com  ->  New  ->  Blueprint.
+#   3. Connect this GitHub repo. Render reads this file and creates:
+#        - a free PostgreSQL database, and
+#        - a Dockerized Odoo web service with the module auto-installed (+ demo data).
+#   4. Wait for the first deploy (~5-8 min). Open the service URL.
+#      Log in with  admin / admin  and open the "Fund Management" app.
+#
+# Notes:
+#   - Free Postgres and free web services are fine for a demo (the web service
+#     sleeps when idle and wakes on the next request).
+#   - Change admin_passwd in config/odoo.conf before using this for real data.
+
+databases:
+  - name: nn-fund-db
+    databaseName: odoo
+    user: odoo
+    plan: free
+
+services:
+  - type: web
+    name: nn-fund-odoo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /web/login
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: nn-fund-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: nn-fund-db
+          property: port
+      - key: DB_USER
+        fromDatabase:
+          name: nn-fund-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: nn-fund-db
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: nn-fund-db
+          property: database
+    # Odoo binds to Render's injected $PORT, connects to the managed Postgres,
+    # creates the database on first boot and installs the module with demo data.
+    dockerCommand: >
+      odoo
+      --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons
+      --db_host=$DB_HOST --db_port=$DB_PORT --db_user=$DB_USER --db_password=$DB_PASSWORD
+      -d $DB_NAME --db-filter=^$DB_NAME$
+      --http-port=$PORT --proxy-mode
+      -i nn_fund_management --without-demo=False
