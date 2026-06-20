@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Bank-email import wizard (bonus: section 11 Bank Email Integration). -->
+    <record id="view_bank_email_wizard_form" model="ir.ui.view">
+        <field name="name">nn.bank.email.wizard.form</field>
+        <field name="model">nn.bank.email.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Bank Email">
+                <div class="alert alert-info" role="status">
+                    Paste a bank "credited" notification email below. The parser
+                    extracts the amount, transaction reference, date and sender,
+                    and creates an Incoming Fund in
+                    <strong>Pending Verification</strong>. The same email is
+                    never imported twice and duplicate references are blocked.
+                </div>
+                <group>
+                    <field name="fund_account_id"
+                           options="{'no_create': True}"/>
+                    <field name="message_id"/>
+                </group>
+                <group>
+                    <field name="email_body" nolabel="1"
+                           placeholder="Paste the bank notification email here..."/>
+                </group>
+                <footer>
+                    <button name="action_import" type="object"
+                            string="Import" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_bank_email_wizard" model="ir.actions.act_window">
+        <field name="name">Import Bank Email</field>
+        <field name="res_model">nn.bank.email.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_bank_email_wizard" name="Import Bank Email"
+              parent="menu_fund_operations"
+              action="action_bank_email_wizard" sequence="5"
+              groups="nn_fund_management.group_fund_finance"/>
+
+</odoo>

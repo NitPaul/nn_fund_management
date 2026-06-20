@@ -22,6 +22,8 @@ Key features:
   * Fund requisitions and partial bill control.
   * Transfers between projects / expense heads.
   * Configurable approval rules (no hard-coded approvers).
+  * Bank-email integration prototype (parse notification emails into pending
+    incoming funds, deduplicated and logged).
   * Role based security (groups, ACLs, record rules, server-side checks).
 """,
     "author": "Trainee Candidate - NN Services Assessment",
@@ -48,6 +50,7 @@ Key features:
         "views/approval_rule_views.xml",
         "views/dashboard_views.xml",
         "views/menus.xml",
+        "views/bank_email_wizard_views.xml",
     ],
     "demo": [
         "demo/demo_data.xml",

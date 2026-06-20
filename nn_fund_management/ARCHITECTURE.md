@@ -160,20 +160,33 @@ Two complementary mechanisms:
   `_check_not_own_request`, finance-only confirm, admin-only cancel of
   approved records). Hiding a button is never the only defence.
 
-## 9. Bank email integration (designed, not shipped)
+## 9. Bank email integration (prototype, shipped)
 
-The receiving model already carries `email_message_id` and a
-`pending_verification` state. The intended prototype:
+The receiving model carries `email_message_id` and a `pending_verification`
+state, and the prototype is implemented in `models/incoming_fund.py`:
 
-1. An incoming-mail alias routes bank notification emails to
-   `nn.incoming.fund` via `message_new`.
-2. A regex parser extracts bank name, (masked) account number, transaction
-   reference, date, amount and sender from the body.
-3. A record is created in `pending_verification`, deduplicated by
-   `email_message_id` (same email never processed twice) and by the
-   `(account, transaction_reference)` SQL unique constraint (duplicate
-   references detected). Parsing failures are logged. No real bank credentials
-   live in the source.
+1. `_parse_bank_email(body)` uses tolerant regexes to extract bank name,
+   (masked) account number, transaction reference, date, amount and sender. It
+   raises `ValueError` when the two critical fields (amount, reference) are
+   missing, which the callers log.
+2. `_create_from_bank_email(body, message_id, account)` is the shared entry
+   point. It deduplicates by `email_message_id` (the same email is never
+   processed twice - it returns the existing record), resolves the destination
+   account (`_match_bank_account`), rejects a duplicate
+   `(account, transaction_reference)`, and creates the record in
+   `pending_verification` so a finance user must still confirm it before it
+   counts towards any balance.
+3. `message_new(msg_dict, custom_values)` wires the above into Odoo's
+   mail-gateway: point an incoming-mail alias at this model and real bank
+   notification emails flow in. Parse failures are logged and skipped rather
+   than crashing the gateway.
+4. A transient wizard (`nn.bank.email.wizard`, *Operations -> Import Bank
+   Email*) lets a finance user paste an email and exercise the exact same
+   parser from the UI, which makes the feature demonstrable without a
+   configured mail server.
 
-This is listed under *Known limitations* in the README as the one bonus left
-out of the current submission.
+No real bank credentials live in the source; parsing operates purely on the
+email text. Tests `test_09`-`test_12` cover the happy path, the
+same-email-once guarantee, duplicate-reference rejection and unparseable input.
+What remains out of scope is a configured mail server/alias and bank-specific
+parsing templates (the parser targets a generic format).

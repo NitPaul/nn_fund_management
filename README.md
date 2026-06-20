@@ -190,13 +190,17 @@ Security is enforced **server-side**, not by hiding buttons:
 
 ## Known limitations
 
-* **Bank email integration** (section 11 bonus) is **not implemented** in this
-  submission. The design is documented in `ARCHITECTURE.md` (a `mail.thread`
-  alias + regex parser writing `nn.incoming.fund` records in a "Pending
-  Verification" state, deduplicated by `email_message_id` and transaction
-  reference). The model already carries the `email_message_id` field and the
-  `pending_verification` state so the prototype can be added without schema
-  changes.
+* **Bank email integration** (section 11 bonus) is implemented as a
+  **prototype**, not a production mail pipeline. A regex parser
+  (`nn.incoming.fund._parse_bank_email`) extracts the amount, transaction
+  reference, date, bank, account and sender from an email body and creates a
+  record in the **Pending Verification** state; the same email is never
+  processed twice (deduplicated by `email_message_id`), duplicate references
+  are rejected and parse failures are logged. It can be driven live from the
+  UI via **Operations → Import Bank Email** (paste an email), and the
+  `message_new` mail-gateway hook is in place so a real incoming-mail alias can
+  feed it. What is *not* shipped is a configured mail server / alias and
+  bank-specific templates - the parser targets a generic notification format.
 * Concurrency: balance checks compare against computed availability at submit
   time. Two simultaneous submissions in separate transactions could
   theoretically both pass; a production setup would add row-level locking

@@ -262,3 +262,52 @@ class TestFundFlow(TransactionCase):
         self.assertFalse(alloc.md_required)
         alloc.with_user(self.gm).action_gm_approve()
         self.assertEqual(alloc.state, "approved")
+
+    # ------------------------------------------------------------------
+    # Bonus: bank-email integration.
+    # ------------------------------------------------------------------
+    SAMPLE_BANK_EMAIL = (
+        "Dear Customer,\n"
+        "Your account XXXX1234 with Test Bank has been credited.\n"
+        "Amount: BDT 250,000.00\n"
+        "Transaction Reference: TXN-EMAIL-9001\n"
+        "Date: 2026-06-17\n"
+        "From: ACME Industries Ltd\n"
+        "Thank you."
+    )
+
+    def test_09_bank_email_creates_pending_fund(self):
+        rec = self.env["nn.incoming.fund"]._create_from_bank_email(
+            self.SAMPLE_BANK_EMAIL, message_id="<msg-9001@bank>",
+            account=self.account)
+        self.assertEqual(rec.state, "pending_verification")
+        self.assertEqual(rec.amount, 250000)
+        self.assertEqual(rec.transaction_reference, "TXN-EMAIL-9001")
+        self.assertEqual(rec.sender, "ACME Industries Ltd")
+        # The pending fund does NOT count towards the balance until confirmed.
+        self.assertEqual(self.account.total_received, 0)
+
+    def test_10_bank_email_same_message_not_processed_twice(self):
+        first = self.env["nn.incoming.fund"]._create_from_bank_email(
+            self.SAMPLE_BANK_EMAIL, message_id="<msg-dup@bank>",
+            account=self.account)
+        again = self.env["nn.incoming.fund"]._create_from_bank_email(
+            self.SAMPLE_BANK_EMAIL, message_id="<msg-dup@bank>",
+            account=self.account)
+        # Same email -> same record returned, no duplicate created.
+        self.assertEqual(first, again)
+
+    def test_11_bank_email_duplicate_reference_blocked(self):
+        self.env["nn.incoming.fund"]._create_from_bank_email(
+            self.SAMPLE_BANK_EMAIL, message_id="<msg-a@bank>",
+            account=self.account)
+        # A different email carrying the same reference must be rejected.
+        with self.assertRaises(ValueError):
+            self.env["nn.incoming.fund"]._create_from_bank_email(
+                self.SAMPLE_BANK_EMAIL, message_id="<msg-b@bank>",
+                account=self.account)
+
+    def test_12_bank_email_unparseable_raises(self):
+        with self.assertRaises(ValueError):
+            self.env["nn.incoming.fund"]._parse_bank_email(
+                "Hello, this is not a bank notification.")

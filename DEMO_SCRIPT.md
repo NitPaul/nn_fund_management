@@ -39,6 +39,20 @@ Turn your **facecam on** (required by the brief). Speak to each point in the
 
 ---
 
+## Part A-bonus — bank email integration (30–60s)
+As `finance@demo.com`, go to **Operations → Import Bank Email**. A sample
+email is pre-filled. Click **Import**.
+* An **Incoming Fund** opens in **Pending Verification** with the amount
+  (250,000), reference (`TXN-EMAIL-0001`), date and sender parsed from the text.
+* **What to say:** "A regex parser turns a bank notification email into a
+  pending fund. The same email can't be imported twice — it's deduplicated by
+  the email Message-ID — and a duplicate transaction reference is rejected.
+  It stays *Pending Verification* until a finance user confirms it, so an email
+  alone never moves the balance." Optionally set a **Message-ID**, Import, then
+  Import again with the same ID to show it returns the same record (no copy).
+
+---
+
 ## Part B — security & integrity (1–2 min)
 * Log in as `fund.user@demo.com`: show they **cannot** see the *Configuration*
   menu and only see **their own** requests.

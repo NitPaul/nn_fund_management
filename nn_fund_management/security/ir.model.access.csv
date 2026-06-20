@@ -33,3 +33,5 @@ access_fund_history_finance,fund.history.finance,model_nn_fund_history,group_fun
 access_fund_history_admin,fund.history.admin,model_nn_fund_history,group_fund_admin,1,1,1,1
 access_approval_rule_user,approval.rule.user,model_nn_approval_rule,group_fund_user,1,0,0,0
 access_approval_rule_admin,approval.rule.admin,model_nn_approval_rule,group_fund_admin,1,1,1,1
+access_bank_email_wizard_finance,bank.email.wizard.finance,model_nn_bank_email_wizard,group_fund_finance,1,1,1,1
+access_bank_email_wizard_admin,bank.email.wizard.admin,model_nn_bank_email_wizard,group_fund_admin,1,1,1,1
