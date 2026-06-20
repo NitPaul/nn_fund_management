@@ -213,9 +213,16 @@ Security is enforced **server-side**, not by hiding buttons:
 
 ## Live deployment
 
+**Live demo:** https://nn-fund-odoo-7cdj.onrender.com
+Log in as `admin` / `admin`, or with a demo role user (password `demo`):
+`finance@demo.com`, `fund.user@demo.com`, `gm@demo.com`, `md@demo.com`.
+*(Hosted on Render's free tier - the first request after it has been idle may
+take ~30s to wake the service.)*
+
 The Docker image is self-contained and can be deployed to any container host.
-See **[`DEPLOY.md`](DEPLOY.md)** for step-by-step instructions for Render.com
-(free tier), Railway and a generic VPS.
+A one-click [`render.yaml`](render.yaml) Blueprint provisions the Postgres
+database and Odoo service automatically; see **[`DEPLOY.md`](DEPLOY.md)** for
+that and for Railway / generic VPS instructions.
 
 ---
 

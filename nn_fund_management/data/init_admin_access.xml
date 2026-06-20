@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate: applied once at install. If the admin's groups are later
+         changed by hand, a module upgrade will not undo that change. -->
+    <data noupdate="1">
+
+        <!-- Give the database administrator Fund Administrator access on
+             install so the module is immediately usable and demoable. We use
+             the framework reference ``base.user_admin`` (not a hard-coded
+             numeric ID), as required by the assessment. The Fund Administrator
+             group implies every other fund role, so the admin can run and
+             review the whole workflow out of the box. -->
+        <record id="base.user_admin" model="res.users">
+            <field name="groups_id"
+                   eval="[(4, ref('nn_fund_management.group_fund_admin'))]"/>
+        </record>
+
+    </data>
+</odoo>

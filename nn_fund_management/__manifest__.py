@@ -39,6 +39,7 @@ Key features:
         "security/ir.model.access.csv",
         # Master / config data.
         "data/sequences.xml",
+        "data/init_admin_access.xml",
         # Views.
         "views/fund_account_views.xml",
         "views/incoming_fund_views.xml",
