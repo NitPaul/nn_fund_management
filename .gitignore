@@ -15,16 +15,10 @@ postgres-data/
 *.env.local
 config/odoo.conf.local
 
-# Assessment source files (keep repo focused on the module)
-Assesement_Mail.txt
-Technical Assessment.pdf
-
-# Personal aids - kept locally, not part of the submitted deliverables
-DEMO_SCRIPT.md
-INTERVIEW_PREP.md
-
-# One-off operational helpers - kept locally, not part of the deliverables
-scripts/
+# Personal-only files: aids, the assessment source, one-off helpers.
+# All kept in one folder so the deliverable repo stays clean. Move this
+# folder out of the project whenever you like - nothing here is tracked.
+_personal/
 
 # IDE / OS
 .idea/
