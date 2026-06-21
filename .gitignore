@@ -23,6 +23,9 @@ Technical Assessment.pdf
 DEMO_SCRIPT.md
 INTERVIEW_PREP.md
 
+# One-off operational helpers - kept locally, not part of the deliverables
+scripts/
+
 # IDE / OS
 .idea/
 .vscode/

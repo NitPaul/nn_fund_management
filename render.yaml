@@ -56,4 +56,4 @@ services:
       --db_host=$DB_HOST --db_port=$DB_PORT --db_user=$DB_USER --db_password=$DB_PASSWORD
       -d $DB_NAME --db-filter=^$DB_NAME$
       --http-port=$PORT --proxy-mode
-      -i nn_fund_management --without-demo=False
+      -i nn_fund_management
